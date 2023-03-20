@@ -12,7 +12,10 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@iconify/vue": "^4.1.0",
     "@vitejs/plugin-vue": "^4.0.0",
+    "sass": "^1.59.3",
+    "uid": "^2.0.1",
     "vite": "^4.1.4"
   }
 }
