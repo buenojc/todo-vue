@@ -1,6 +1,7 @@
 
 <script setup>
-import { ref, reactive, defineEmits } from 'vue';
+import { ref, reactive } from 'vue';
+import TodoButton from './TodoButton.vue';
 //O ref é uma forma de fazer com o que o dado seja reativo, ou seja
 // ele atualiza o conteúdo de acordo com as alterações
 // Para acessar o valor usando o ref no script, é necessário usar o value (todo.value)
@@ -52,7 +53,9 @@ const createTodo = () => {
         <input type="text" v-model="todoState.todo" />
 
         <!-- @ é um shorthand que escuta evento do dom -->
-        <button @click="createTodo">Create</button>
+        <!-- <button @click="createTodo">Create</button> -->
+
+        <TodoButton @click="createTodo" />
     </div>
 
     <!-- v-if recebe true ou false e sendo true mostra o elemento 
@@ -90,10 +93,7 @@ const createTodo = () => {
         }
     }
 
-    button {
-        padding: 8px 16px;
-        border: none;
-    }
+    
 }
 
 .error-msg{
