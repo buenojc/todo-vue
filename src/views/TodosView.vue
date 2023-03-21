@@ -1,10 +1,52 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { uid } from 'uid';
 import TodoCreator from '../components/TodoCreator.vue';
 import TodoItem from '../components/TodoItem.vue';
 import { Icon } from '@iconify/vue';
 const todoList = ref([])
+
+/* 
+  o watch serve para monitorar mudanças em um dado js, e executar um callback a toda a mudança
+  que ocorrer. Tem a mesma ideia do useEffect no react.
+*/
+
+watch(todoList, () => {
+  setTodoListLocalStorage()
+}, {
+
+  /* 
+    A propriedade deep serve para indicar que o monitoramento deve ocorrer em todos os itens
+    dentro da variável que passamos. Se não deixar como true, ele só vai pegar o primeiro nível
+  */
+  deep: true
+})
+
+/***
+ * Uma computed property é uma forma de acessar dados e usar lógicas mais complexas
+ * É uma forma de alterar e manipular dados visuais. Não deve ser usado para alterar dados de fato, para isso usar metodos
+ * Neste caso, a ideia é checar quando todos as tarefas forem realizadas e assim 
+ * mandar uma mensagem. O computed (importado do vue) recebe um callback (chamado de getter)
+ * 
+ * uma vantagem do computed property é o fato de verificar todos os elementos
+ * dentro do dado que deve ser verificado, sem a necessidade de adicionar um propriedade deep
+ */
+const todosCompleted = computed(() => {
+  /**
+   * Esse every vai percorrer todo o array e checar se está completo.
+   * Só vai retornar true se TODOS os itens estiverem com a propriedade true
+   */
+  return todoList.value.every((todo) => todo.isCompleted)
+})
+
+const fetchTodoList = () => {
+  const savedTodoList = JSON.parse(localStorage.getItem('todoList'))
+  todoList.value  = savedTodoList ? savedTodoList : [];
+}
+
+const setTodoListLocalStorage = () => {
+  localStorage.setItem('todoList', JSON.stringify(todoList.value))
+}
 
 const createTodo = (todo) => {
   // Usando o .value. por estar usando o ref, caso contrário seria só o nome do objeto + propriedade
@@ -32,6 +74,9 @@ const deleteTodo = (todoId) => {
   todoList.value = todoList.value.filter(todo => todo.id !== todoId)
 }
 
+
+fetchTodoList()
+
 </script>
 
 <template>
@@ -42,6 +87,11 @@ const deleteTodo = (todoId) => {
             Essa função recebe o dado emitido
           -->
     <TodoCreator @create-todo="createTodo" />
+
+    <p v-if="todosCompleted && todoList.length > 0" class="msg-completed">
+      <Icon icon="noto-v1:party-popper" width="22" />
+      <span>Tudo completo</span>
+    </p>
 
     <ul class="todo-list" v-if="todoList.length > 0">
       <!-- O v-for é uma forma de se aplicar um for no vue. 
@@ -95,6 +145,15 @@ main {
     justify-content: center;
     gap: 8px;
     margin-top: 24px;
+  }
+
+  .msg-completed{
+    text-align: center;
+    margin-top: 30px;
+
+    svg{
+      margin-right: 5px;
+    }
   }
 }
 </style>
